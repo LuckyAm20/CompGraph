@@ -96,7 +96,7 @@ HRESULT InitD3D(HWND hWnd)
     UINT height = rc.bottom - rc.top;
 
     DXGI_SWAP_CHAIN_DESC sd = {};
-    sd.BufferCount = 1;
+    sd.BufferCount = 2;
     sd.BufferDesc.Width = width;
     sd.BufferDesc.Height = height;
     sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -104,6 +104,7 @@ HRESULT InitD3D(HWND hWnd)
     sd.OutputWindow = hWnd;
     sd.SampleDesc.Count = 1;
     sd.Windowed = TRUE;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 
     UINT createDeviceFlags = 0;
 #if defined(_DEBUG)
@@ -158,7 +159,7 @@ void CleanupD3D()
 
 void GenerateNewTargetColor()
 {
-    float newColor[3];
+    float newColor[3] = { 0.0f, 0.0f, 0.0f };
     do {
         newColor[0] = static_cast<float>(rand()) / RAND_MAX;
         newColor[1] = static_cast<float>(rand()) / RAND_MAX;
@@ -193,21 +194,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_ERASEBKGND:
-    {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hWnd, &ps);
-        RECT rc;
-        GetClientRect(hWnd, &rc);
-        COLORREF clr = RGB(static_cast<int>(g_CurrentColor[0] * 255),
-            static_cast<int>(g_CurrentColor[1] * 255),
-            static_cast<int>(g_CurrentColor[2] * 255));
-        HBRUSH hBrush = CreateSolidBrush(clr);
-        FillRect(hdc, &rc, hBrush);
-        DeleteObject(hBrush);
-        EndPaint(hWnd, &ps);
-        return 1;
-    }
     case WM_SIZE:
         if (g_pSwapChain && wParam != SIZE_MINIMIZED)
         {
