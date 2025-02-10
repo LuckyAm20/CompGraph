@@ -1,18 +1,10 @@
-
-// ----- Выходные данные из вершинного шейдера -----
-// (Будут «входом» для пиксельного шейдера)
 struct PS_INPUT
 {
-    float4 position : SV_Position; // позиция для растеризатора
-    float4 color : COLOR; // цвет (или можно TEXCOORD0)
+    float4 position : SV_Position;
+    float4 color : COLOR;
 };
 
-// ---------------- ВЕРШИННЫЙ ШЕЙДЕР ----------------
-
-
-// ---------------- ПИКСЕЛЬНЫЙ ШЕЙДЕР ----------------
 float4 main(PS_INPUT input) : SV_Target
 {
-    // В простейшем случае: возвращаем цвет, пришедший из вершин
     return input.color;
 }
