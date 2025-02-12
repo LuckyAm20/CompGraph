@@ -47,7 +47,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PS.hlsl" />
-    <FxCompile Include="VS.hlsl" />
+    <CopyFileToFolders Include="PS.hlsl" />
+    <CopyFileToFolders Include="VS.hlsl" />
   </ItemGroup>
 </Project>
