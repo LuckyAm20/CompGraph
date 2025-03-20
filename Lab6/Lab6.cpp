@@ -629,6 +629,8 @@ void CleanupD3D()
     if (g_pLightBuffer)         g_pLightBuffer->Release();
     if (g_pLightPS)             g_pLightPS->Release();
     if (g_pLightColorBuffer)    g_pLightColorBuffer->Release();
+    if (g_pBlueColorBuffer) g_pBlueColorBuffer->Release();
+    if (g_pGreenColorBuffer) g_pGreenColorBuffer->Release();
     if (g_pTransparentVS) g_pTransparentVS->Release();
 }
 
