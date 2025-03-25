@@ -880,8 +880,6 @@ void CleanupD3D()
 
     if (g_pFullScreenVB)       g_pFullScreenVB->Release();
     if (g_pFullScreenLayout)   g_pFullScreenLayout->Release();
-    if (g_pPostProcessVS)      g_pPostProcessVS->Release();
-    if (g_pPostProcessPS)      g_pPostProcessPS->Release();
 
 }
 
