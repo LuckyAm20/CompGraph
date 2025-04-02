@@ -93,21 +93,20 @@
     <Image Include="Lab8.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
-    <Image Include="cube_normal.dds" />
-    <Image Include="skybox.dds" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Light_PS.hlsl" />
-    <FxCompile Include="PostProcessPS.hlsl" />
-    <FxCompile Include="PostProcessVS.hlsl" />
-    <FxCompile Include="PS.hlsl" />
-    <FxCompile Include="Skybox_PS.hlsl" />
-    <FxCompile Include="Skybox_VS.hlsl" />
-    <FxCompile Include="Transparent_PS.hlsl" />
-    <FxCompile Include="Transparent_VS.hlsl" />
-    <FxCompile Include="VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="cube.dds" />
+    <CopyFileToFolders Include="cube_normal.dds" />
+    <CopyFileToFolders Include="skybox.dds" />
+    <CopyFileToFolders Include="Light_PS.hlsl" />
+    <CopyFileToFolders Include="PostProcessPS.hlsl" />
+    <CopyFileToFolders Include="PostProcessVS.hlsl" />
+    <CopyFileToFolders Include="PS.hlsl" />
+    <CopyFileToFolders Include="Skybox_PS.hlsl" />
+    <CopyFileToFolders Include="Skybox_VS.hlsl" />
+    <CopyFileToFolders Include="Transparent_PS.hlsl" />
+    <CopyFileToFolders Include="Transparent_VS.hlsl" />
+    <CopyFileToFolders Include="VS.hlsl" />
+    <CopyFileToFolders Include="GpuCulling.hlsl" />
   </ItemGroup>
 </Project>
