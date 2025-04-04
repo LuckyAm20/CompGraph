@@ -986,6 +986,7 @@ void CleanupD3D()
     if (g_pObjectsIdsBuffer)    g_pObjectsIdsBuffer->Release();
     if (g_pObjectsIdsUAV)       g_pObjectsIdsUAV->Release();
     if (g_pIndirectArgsStagingBuffer) g_pIndirectArgsStagingBuffer->Release();
+    if (g_pSceneCBBuffer) g_pSceneCBBuffer->Release();
 }
 
 

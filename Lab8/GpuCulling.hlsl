@@ -1,62 +1,66 @@
-#define MAX_CUBES 21
-
-struct CubeGeomBuffer
-{
-    float4x4 worldMatrix;
-    float4x4 norm;
-    float4 cubeParams;
-};
-
 cbuffer CullingParams : register(b0)
 {
-    uint4 numShapes;
-    float4 bbMin[MAX_CUBES];
-    float4 bbMax[MAX_CUBES];
+    uint numShapes;
+    uint pad0;
+    uint pad1;
+    uint pad2;
+    float4 bbMin[21];
+    float4 bbMax[21];
 };
 
-cbuffer SceneCB : register(b1)
+cbuffer SceneData : register(b1)
 {
     float4x4 viewProjectionMatrix;
     float4 planes[6];
 };
 
-RWStructuredBuffer<uint> indirectArgs : register(u0);
-RWStructuredBuffer<uint4> objectsIds : register(u1);
-
-bool IsInFrustum(in float4 planes[6], in float3 bbMin, in float3 bbMax)
-{
-    for (int i = 0; i < 6; i++)
-    {
-        if ((planes[i].x * bbMin.x) + (planes[i].y * bbMin.y) + (planes[i].z * bbMin.z) + planes[i].w >= 0.0f ||
-            (planes[i].x * bbMax.x) + (planes[i].y * bbMin.y) + (planes[i].z * bbMin.z) + planes[i].w >= 0.0f ||
-            (planes[i].x * bbMin.x) + (planes[i].y * bbMax.y) + (planes[i].z * bbMin.z) + planes[i].w >= 0.0f ||
-            (planes[i].x * bbMax.x) + (planes[i].y * bbMax.y) + (planes[i].z * bbMin.z) + planes[i].w >= 0.0f ||
-            (planes[i].x * bbMin.x) + (planes[i].y * bbMin.y) + (planes[i].z * bbMax.z) + planes[i].w >= 0.0f ||
-            (planes[i].x * bbMax.x) + (planes[i].y * bbMin.y) + (planes[i].z * bbMax.z) + planes[i].w >= 0.0f ||
-            (planes[i].x * bbMin.x) + (planes[i].y * bbMax.y) + (planes[i].z * bbMax.z) + planes[i].w >= 0.0f ||
-            (planes[i].x * bbMax.x) + (planes[i].y * bbMax.y) + (planes[i].z * bbMax.z) + planes[i].w >= 0.0f)
-        {
-            continue;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    return true;
-}
+RWStructuredBuffer<uint> indirectArgsBuffer : register(u0);
+RWStructuredBuffer<uint> objectsIdsBuffer : register(u1);
 
 [numthreads(64, 1, 1)]
-void main(uint3 globalThreadId : SV_DispatchThreadID)
+void main(uint3 DTid : SV_DispatchThreadID)
 {
-    if (globalThreadId.x >= numShapes.x)
+    uint idx = DTid.x;
+    if (idx >= numShapes)
         return;
+    
+    float4 minVal = bbMin[idx];
+    float4 maxVal = bbMax[idx];
+    
+    float3 corners[8];
+    corners[0] = float3(minVal.x, minVal.y, minVal.z);
+    corners[1] = float3(maxVal.x, minVal.y, minVal.z);
+    corners[2] = float3(minVal.x, maxVal.y, minVal.z);
+    corners[3] = float3(minVal.x, minVal.y, maxVal.z);
+    corners[4] = float3(maxVal.x, maxVal.y, minVal.z);
+    corners[5] = float3(maxVal.x, minVal.y, maxVal.z);
+    corners[6] = float3(minVal.x, maxVal.y, maxVal.z);
+    corners[7] = float3(maxVal.x, maxVal.y, maxVal.z);
 
-    if (IsInFrustum(planes, bbMin[globalThreadId.x].xyz, bbMax[globalThreadId.x].xyz))
+    bool isVisible = true;
+    for (int p = 0; p < 6; p++)
     {
-        uint index;
-        InterlockedAdd(indirectArgs[1], 1, index);
-        objectsIds[index] = uint4(globalThreadId.x, 0, 0, 0);
+        int outsideCount = 0;
+        for (int c = 0; c < 8; c++)
+        {
+            float distance = dot(planes[p].xyz, corners[c]) + planes[p].w;
+            if (distance < 0.0)
+            {
+                outsideCount++;
+            }
+        }
+        if (outsideCount == 8)
+        {
+            isVisible = false;
+            break;
+        }
+    }
+
+    if (isVisible)
+    {
+        uint visibleIndex;
+        InterlockedAdd(indirectArgsBuffer[1], 1, visibleIndex);
+        objectsIdsBuffer[visibleIndex] = idx;
     }
 }
 
